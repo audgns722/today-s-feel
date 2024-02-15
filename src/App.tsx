@@ -3,7 +3,7 @@ import axios from 'axios';
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
-import { CircleLoader } from 'react-spinners';
+import { PulseLoader } from 'react-spinners';
 import Header from './components/Header';
 
 const App: React.FC = () => {
@@ -14,9 +14,30 @@ const App: React.FC = () => {
   const [fruit, setFruit] = useState('');
   const [color, setColor] = useState('');
   const [country, setCountry] = useState('');
+  const [moods, setMoods] = useState('');
   const [response, setResponse] = useState('');
   const [imageUrl, setImageUrl] = useState('');
 
+
+  // 기분 상태 체크박스 목록
+  const moodOptions = ['우울함', '기쁨', '슬픔', '보통', '행복함'];
+  // 사용자의 기분에 따른 배경색을 결정하는 함수
+  const getBackgroundStyle = (moods: string) => {
+    switch (moods) {
+      case '행복함':
+        return { background: 'radial-gradient(circle at center, #f9cdff 0%, #fad5ff 10%, #fff9ff 50%, #faf5ff 100%)' };
+      case '우울함':
+        return { background: 'radial-gradient(circle, rgb(74, 78, 105) 0%, rgb(162 165 203) 10%, rgb(230 230 239) 50%, rgb(215 215 229) 100%)' }; // 어두운 테마
+      case '기쁨':
+        return { background: 'radial-gradient(circle, rgb(255, 175, 189) 0%, rgb(251 208 182) 10%, rgb(255 241 233) 50%, rgb(255 248 242) 100%)' }; // 따뜻한 테마
+      case '슬픔':
+        return { background: 'radial-gradient(circle, rgb(106, 133, 182) 0%, rgb(202 218 251) 10%, rgb(235 241 255) 50%, rgb(228 238 255) 100%)' }; // 차분한 테마
+      case '보통':
+        return { background: 'radial-gradient(circle, rgb(229 255 254) 0%, rgb(239 255 245) 10%, rgb(233 251 233) 50%, rgb(255 255 255) 100%)' }; // 중립적인 테마
+      default:
+        return { background: 'radial-gradient(circle at center, #f9cdff 0%, #fad5ff 10%, #fff9ff 50%, #faf5ff 100%)' };
+    }
+  };
 
   // ChatOpenAI 인스턴스를 초기화합니다.
   const chatModel = new ChatOpenAI({
@@ -26,10 +47,10 @@ const App: React.FC = () => {
   });
 
   const handleGenerate = async () => {
-    const question = `
-    사용자가 ${animal}, ${fruit}, ${color}, ${country} 좋아한다고 합니다. 
-    이러한 선호도를 통해 사용자의 기분을 자세하게 표현한다면 어떻게 할까?
-    대답은 3~5줄 정도로 해줬으면 좋겠어요
+    const question = `오늘의 기분은 ${moods} 입니다.
+    사용자는 평소 ${animal}(animal), ${fruit}(fruit), ${color}(color), ${country}(country) 좋아한다고 합니다. 
+    이를 통해 사용자의 기분을 표현해주세요.
+    대답은 3~5줄 정도로 해줬으면 좋겠어요.
     `;
 
     const prompt = ChatPromptTemplate.fromMessages([
@@ -58,7 +79,8 @@ const App: React.FC = () => {
         'https://api.openai.com/v1/images/generations',
         {
           model: "dall-e-3",
-          prompt: `Imagine a peaceful forest where a beloved ${animal} is frolicking freely, surrounded by trees laden with favorite ${fruit}. The sky is painted in the user's favorite ${color}, creating a warm and comforting atmosphere. The entire setting is beautifully integrated with the distinctive landscapes or iconic landmarks of the user's favorite ${country}, blending the natural forest environment with cultural and historical elements unique to that country."`,
+          // prompt: `The mood of the image is ${moods}. Imagine a peaceful forest where a beloved ${animal} is frolicking freely, surrounded by trees laden with favorite ${fruit}. The sky is painted in the user's favorite ${color}, creating a warm and comforting atmosphere. The entire setting is beautifully integrated with the distinctive landscapes or iconic landmarks of the user's favorite ${country}, blending the natural forest environment with cultural and historical elements unique to that country."`,
+          prompt: `The picture shows some traditional ${country} houses or ${country} landscapes, with ${animal} walking and laughing under the bright ${color} sunlight during the day. The mood of the image is ${moods}. Negative prompt anime, painting, blurry,`,
           n: 1,
           size: "1024x1024",
         },
@@ -80,97 +102,107 @@ const App: React.FC = () => {
     }
   };
 
-  // const fetchImageAndDownload = async () => {
-  //   if (!imageUrl) return; // 이미지 URL이 없는 경우 함수 종료
-
-  //   try {
-  //     setIsLoading2(true); // 이미지 다운로드 로딩 시작
-  //     const response = await fetch(imageUrl);
-  //     const blob = await response.blob(); // 이미지를 Blob 객체로 변환
-  //     const objectURL = URL.createObjectURL(blob); // Blob 객체로부터 Object URL 생성
-  //     const link = document.createElement('a');
-  //     link.href = objectURL;
-  //     link.download = "generated_image.png"; // 다운로드될 파일명 지정
-  //     document.body.appendChild(link); // 링크를 문서에 추가
-  //     link.click(); // 프로그래밍 방식으로 링크 클릭 시뮬레이션
-  //     document.body.removeChild(link); // 사용 후 링크 제거
-  //   } catch (error) {
-  //     console.error("Error fetching and downloading image:", error);
-  //   } finally {
-  //     setIsLoading2(false); // 로딩 종료
-  //   }
-  // };
-
   return (
     <>
-      <div className="min-h-screen center-gradient">
+      <div style={getBackgroundStyle(moods)} className="min-h-screen">
         <Header />
         <main>
-          <div className="text-center my-10">
-            <h1 className="flex items-center justify-center gap-1 text12xl font-bold mb-5 font-jaram">
+          <div className="text-center my-5">
+            <h1 className="flex items-center justify-center gap-1 text12xl font-bold font-jaram">
               <span className='text-3xl text-gradient'>당신의 기분을 그림으로</span>😁</h1>
           </div>
-          <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg text-center">
-            <h1 className="text-xl font-bold mb-4">당신의 기분을 그려드려요</h1>
-            <div className='flex justify-evenly flex-wrap'>
-              <input
-                type="text"
-                value={animal}
-                onChange={(e) => setAnimal(e.target.value)}
-                placeholder="😻 좋아하는 동물"
-                className="border-2 border-gray-200 p-2 rounded w-2/5 mb-2"
-              />
-              <input
-                type="text"
-                value={fruit}
-                onChange={(e) => setFruit(e.target.value)}
-                placeholder="🍓 좋아하는 과일"
-                className="border-2 border-gray-200 p-2 rounded w-2/5 mb-2"
-              />
-              <input
-                type="text"
-                value={color}
-                onChange={(e) => setColor(e.target.value)}
-                placeholder="🎨 좋아하는 색상"
-                className="border-2 border-gray-200 p-2 rounded w-2/5 mb-2"
-              />
-              <input
-                type="text"
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                placeholder="🌍 가고싶은 나라"
-                className="border-2 border-gray-200 p-2 rounded w-2/5 mb-2"
-              />
+          <div className="max-w-2xl mx-auto p-6 bg-white/[0.8] rounded-lg shadow-lg text-center">
+            <h1 className="text-xl font-bold">당신의 기분을 그려드려요</h1>
+            <div className='flex justify-between flex-wrap mt-2'>
+              <div className='flex flex-wrap'>
+                {moodOptions.map(option => (
+                  <label key={option} className="inline-flex items-center mr-4">
+                    <input
+                      type="radio" // 체크박스 대신 라디오 버튼 사용
+                      name="mood" // 모든 라디오 버튼에 동일한 name 속성 부여
+                      value={option}
+                      checked={moods === option}
+                      onChange={(e) => setMoods(e.target.value)}
+                      className="form-radio"
+                    />
+                    <span className="ml-2">{option}</span>
+                  </label>
+                ))}
+              </div>
+              <div className='w-full my-2 text-left flex justify-between'>
+                <p className='inline-block text-sm'>당신이 평소 좋아하는 동물은?</p>
+                <input
+                  type="text"
+                  value={animal}
+                  onChange={(e) => setAnimal(e.target.value)}
+                  placeholder="🙈 ex)원숭이"
+                  className="border-b-2 text-sm ml-3 outline-none w-2/3 bg-none py-1"
+                />
+              </div>
+              <div className='w-full my-2 text-left flex justify-between'>
+                <p className='inline-block text-sm'>당신이 평소 좋아하는 과일은?</p>
+                <input
+                  type="text"
+                  value={fruit}
+                  onChange={(e) => setFruit(e.target.value)}
+                  placeholder="🍓 ex)딸기"
+                  className="border-b-2 text-sm ml-3 outline-none w-2/3 bg-none py-1"
+                />
+              </div>
+              <div className='w-full my-2 text-left flex justify-between'>
+                <p className='inline-block text-sm'>당신이 평소 좋아하는 색상은?</p>
+                <input
+                  type="text"
+                  value={color}
+                  onChange={(e) => setColor(e.target.value)}
+                  placeholder="🎨 ex)무지개색"
+                  className="border-b-2 text-sm ml-3 outline-none w-2/3 bg-none py-1"
+                />
+              </div>
+              <div className='w-full my-2 text-left flex justify-between'>
+                <p className='inline-block text-sm'>당신이 현재 가고싶은 나라는?</p>
+                <input
+                  type="text"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  placeholder="🌍 ex)프랑스"
+                  className="border-b-2 text-sm ml-3 outline-none w-2/3 bg-none py-1"
+                />
+              </div>
             </div>
             <button
               onClick={handleGenerate}
-              className="bg-blue-500 text-white p-2 rounded w-8/12 mx-auto hover:bg-blue-700 transition-colors"
+              className="bg-blue-500 text-white p-2 rounded w-full mx-auto mt-2 hover:bg-blue-700 transition-colors"
             >
               생성하기
             </button>
           </div>
-          <div className="flex flex-col items-center max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg text-left break-all mt-5">
+          <div className="flex flex-col items-center max-w-2xl mx-auto p-6 bg-white/[0.8] rounded-lg shadow-lg text-left mt-1">
             {isLoading ? (
-              <CircleLoader color="#36D7B7" />
+              <PulseLoader color="#9028ff" size={10} />
             ) : (
-              <div>내 기분... : {response}</div>
+              <div className='bg-zinc-100'>{response}</div>
             )}
             <button
               onClick={generateImage}
-              className="bg-blue-500 text-white p-2 rounded w-8/12 mx-auto hover:bg-blue-700 transition-colors"
+              className="bg-blue-500 text-white p-2 my-4 rounded w-full mx-auto hover:bg-blue-700 transition-colors"
             >이미지 생성하기</button>
             {
-              imageUrl && (
-                <>
-                  <img className='mt-2' src={imageUrl} alt="Generated" />
-                  <a
-                    href={imageUrl}
-                    download="generated_image.png" // 사용자가 이미지를 다운로드할 때 사용될 파일명 지정
-                    className="bg-green-500 text-white p-2 text-center rounded w-8/12 mx-auto text-center hover:bg-green-700 transition-colors mt-4"
-                  >
-                    이미지 저장하기
-                  </a>
-                </>
+              isLoading2 ? (
+                <PulseLoader color="#9028ff" size={10} />
+              ) : (
+                imageUrl && (
+                  <>
+                    <img src={imageUrl} alt="Generated" />
+                    <a
+                      href={imageUrl}
+                      download="generated_image.png" // 사용자가 이미지를 다운로드할 때 사용될 파일명 지정
+                      className="bg-green-500 text-white p-2 rounded w-full mx-auto text-center hover:bg-green-700 transition-colors mt-4"
+                    >
+                      이미지 저장하기
+                    </a>
+                  </>
+                )
               )
             }
           </div>

@@ -20,10 +20,6 @@ body {
     font-family: 'NanumSquareNeo-Variable';
 }
 
-.center-gradient {
-    background: radial-gradient(circle at center, #f9cdff 0%, #fad5ff 10%, #fff9ff 50%, #faf5ff 100%);
-}
-
 .text-gradient {
     background: linear-gradient(to right, #9028ff, #843ace);
     -webkit-background-clip: text;
@@ -32,4 +28,10 @@ body {
 
 .font-jaram {
     font-family: "iceJaram-Rg";
+}
+
+@media (max-width:920px) {
+    .right {
+        right: 0;
+    }
 }
