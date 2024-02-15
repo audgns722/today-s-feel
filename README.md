@@ -1,4 +1,5 @@
-# openai-langchain
+# Today`s Feel
+여러분의 현재 기분을 AI가 그림으로 그려드립니다. 
 
 ## 미리보기
 <img src='https://github.com/audgns722/today-s-feel/blob/main/sample_img.png?raw=true' alt='썸네일' />
