@@ -14,12 +14,15 @@ npm install typescript @types/node @types/react @types/react-dom @types/jest
 npm install --save react-spinners
 npm install axios
 npm install --save openai
+npm install framer-motion
 ```
 
 ## 제작과정
 
 "Today's Feel"의 개발은 다음과 같은 단계로 진행되었습니다.
 - 프로젝트 초기 설정: TypeScript와 Tailwind CSS를 사용하여 리액트 앱을 구성하고 기본 환경을 설정했습니다.
+
+- LangChain (LLM)을 사용한 AI 통신: 프로젝트의 중심 기능 중 하나는 사용자의 입력을 기반으로 AI가 텍스트와 이미지를 생성하는 것입니다. 이를 위해 LangChain (LLM) 라이브러리를 사용하여 OpenAI의 GPT-3와 DALL-E 모델과 통신합니다. LangChain을 사용함으로써, 복잡한 API 통신과 데이터 처리 과정을 간소화하고, AI 모델을 더 쉽게 활용할 수 있게 되었습니다.
 
 - API 통신: OpenAI의 DALL-E와 GPT-3 API를 사용하여 사용자의 입력을 기반으로 이미지와 텍스트를 생성하도록 설정했습니다. Axios 라이브러리를 통해 API 통신을 구현했습니다.
 
