@@ -1,7 +1,9 @@
 # openai-langchain
 
-## 설치
+## 미리보기
+<img src='https://github.com/audgns722/today-s-feel/blob/main/sample_img.png?raw=true' alt='썸네일' />
 
+## 설치
 ```
 npx create-react-app . --template typescript
 npm install -D tailwindcss postcss autoprefixer
